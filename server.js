@@ -1,6 +1,9 @@
-require('dotenv').config();
-const app = require('./src/app');
-const db = require('./src/models');
+import dotenv from 'dotenv';
+import app from './src/app.js';
+import { sequelize } from './src/models/index.js';
+import seedDefaultData from './src/config/defaultSeeder.js';
+
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const DB_NAME = process.env.DB_NAME || 'balaji_ecommerce';
@@ -38,7 +41,10 @@ const printBanner = () => {
 const startServer = async () => {
   try {
     // Authenticate database connection
-    await db.sequelize.authenticate();
+    await sequelize.authenticate();
+
+    // Check & seed default role (Admin: 1) and default user if tables are empty
+    await seedDefaultData();
 
     // Start HTTP Server
     app.listen(PORT, () => {
