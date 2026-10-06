@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const userRoutes = require('./user.routes');
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -10,8 +9,5 @@ router.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
-
-// Mount module routes
-router.use('/users', userRoutes);
 
 module.exports = router;
