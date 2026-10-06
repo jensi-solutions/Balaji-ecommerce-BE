@@ -1,4 +1,6 @@
-const express = require('express');
+import express from 'express';
+import authRoutes from './auth.routes.js';
+
 const router = express.Router();
 
 // Health check endpoint
@@ -10,4 +12,7 @@ router.get('/health', (req, res) => {
   });
 });
 
-module.exports = router;
+// Authentication routes
+router.use('/auth', authRoutes);
+
+export default router;

@@ -1,9 +1,15 @@
-const { Sequelize } = require('sequelize');
-const sequelize = require('../config/db.config');
+import { Sequelize } from 'sequelize';
+import sequelize from '../config/db.config.js';
+import User from './user.model.js';
+import Role from './role.model.js';
 
-const db = {
-  Sequelize,
+// Associations
+Role.hasMany(User, { foreignKey: 'role_id', as: 'users' });
+User.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
+
+export {
   sequelize,
+  Sequelize,
+  User,
+  Role,
 };
-
-module.exports = db;

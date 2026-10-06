@@ -1,10 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const routes = require("./routes");
-const {
-  notFoundHandler,
-  errorHandler,
-} = require("./middlewares/errorHandler.middleware");
+import express from 'express';
+import cors from 'cors';
+import routes from './routes/index.js';
+import { notFoundHandler, errorHandler } from './middlewares/errorHandler.middleware.js';
 
 const app = express();
 
@@ -14,18 +11,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Root welcome route
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.status(200).json({
-    message: "Welcome to Balaji Backend API",
-    status: "Server is active",
+    message: 'Welcome to Balaji Backend API',
+    status: 'Server is active',
   });
 });
 
 // API Routes
-app.use("/api", routes);
+app.use('/api', routes);
 
 // Error Handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-module.exports = app;
+export default app;
