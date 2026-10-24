@@ -5,22 +5,40 @@ import path from 'path';
 // Define the root uploads directory
 const rootUploadsDir = path.resolve(process.cwd(), 'uploads');
 const userUploadsDir = path.join(rootUploadsDir, 'users');
+const categoryUploadsDir = path.join(rootUploadsDir, 'categories');
+const collectionUploadsDir = path.join(rootUploadsDir, 'collections');
+const productUploadsDir = path.join(rootUploadsDir, 'products');
 
 // Ensure root and subdirectories exist
-if (!fs.existsSync(rootUploadsDir)) {
-  fs.mkdirSync(rootUploadsDir, { recursive: true });
-}
-if (!fs.existsSync(userUploadsDir)) {
-  fs.mkdirSync(userUploadsDir, { recursive: true });
-}
+[rootUploadsDir, userUploadsDir, categoryUploadsDir, collectionUploadsDir, productUploadsDir].forEach(
+  (dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  }
+);
 
 // Configure Multer Disk Storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let targetDir = rootUploadsDir;
+
+    const baseUrl = req.baseUrl || '';
+
     if (file.fieldname === 'profile_picture') {
       targetDir = userUploadsDir;
+    } else if (baseUrl.includes('categories') || file.fieldname === 'category_image') {
+      targetDir = categoryUploadsDir;
+    } else if (baseUrl.includes('collections') || file.fieldname === 'banner_image') {
+      targetDir = collectionUploadsDir;
+    } else if (
+      baseUrl.includes('products') ||
+      file.fieldname === 'main_image' ||
+      file.fieldname === 'multiple_images'
+    ) {
+      targetDir = productUploadsDir;
     }
+
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
@@ -38,25 +56,26 @@ const storage = multer.diskStorage({
 export const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 15 * 1024 * 1024, // 15MB max file size
   },
   fileFilter: (req, file, cb) => {
     // Check if the uploaded file is an image
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed for profile pictures!'), false);
+      cb(new Error('Only image files are allowed!'), false);
     }
   },
 });
 
 /**
- * Returns file path starting with uploads/ (without base_url prepended)
+ * Returns relative file path starting with uploads/
  * @param {object} req - Express request object
  * @param {string} filePath - File path stored in DB
- * @returns {string|null} Relative path starting with uploads/ (e.g. uploads/users/1728775600000-avatar.png)
+ * @param {string} defaultFolder - Default folder if not prefixed (e.g. 'users', 'categories', 'products')
+ * @returns {string|null} Relative path starting with uploads/
  */
-export const getFullFileUrl = (req, filePath) => {
+export const getFullFileUrl = (req, filePath, defaultFolder = 'users') => {
   if (!filePath) return null;
 
   // External URL
@@ -72,8 +91,7 @@ export const getFullFileUrl = (req, filePath) => {
     return normalizedPath;
   }
 
-  // Default to uploads/users/
-  return `uploads/users/${normalizedPath}`;
+  return `uploads/${defaultFolder}/${normalizedPath}`;
 };
 
 export const getFileUrl = getFullFileUrl;

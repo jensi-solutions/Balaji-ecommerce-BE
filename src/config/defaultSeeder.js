@@ -9,6 +9,8 @@ const defaultModules = [
   'Permissions',
   'Products',
   'Categories',
+  'Collections',
+  'Warehouse',
   'Orders',
   'Payments',
   'Customers',
