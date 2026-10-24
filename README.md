@@ -226,3 +226,119 @@ npm run dev
 }
 ```
 
+
+
+---
+
+## 🎟️ Coupon APIs (`/api/coupons`)
+
+| Method | Endpoint | Required Permission | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/coupons/create` | `Coupon` -> `create_access` | Create a new coupon code |
+| `PUT` | `/api/coupons/update/:id` | `Coupon` -> `edit_access` | Update coupon details |
+| `GET` | `/api/coupons/all` | `Coupon` -> `view_access` | Get all coupons (paginated, search, status filter) |
+| `GET` | `/api/coupons/withoutFilter` | `Coupon` -> `view_access` | Get all active coupons |
+| `GET` | `/api/coupons/display` | Public / Token | Get displayed coupons for storefront |
+| `GET` | `/api/coupons/:id` | `Coupon` -> `view_access` | Get single coupon by ID |
+| `PUT` | `/api/coupons/status/:id` | `Coupon` -> `edit_access` | Toggle coupon status |
+| `DELETE` | `/api/coupons/delete/:id` | `Coupon` -> `delete_access` | Soft-delete a coupon |
+| `POST` | `/api/coupons/multiple/delete` | `Coupon` -> `delete_access` | Bulk soft-delete coupons |
+
+---
+
+## 🗂️ Category APIs (`/api/categories`)
+
+| Method | Endpoint | Required Permission | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/categories/create` | `Categories` -> `create_access` | Create category (supports `image` upload, parent/sub) |
+| `PUT` | `/api/categories/update/:id` | `Categories` -> `edit_access` | Update category details and image |
+| `GET` | `/api/categories/all` | `Categories` -> `view_access` | Get paginated categories with sub-categories |
+| `GET` | `/api/categories/tree` | `Categories` -> `view_access` | Get full hierarchical category tree |
+| `GET` | `/api/categories/withoutFilter` | `Categories` -> `view_access` | Get all active categories for dropdowns |
+| `GET` | `/api/categories/get/:id` | `Categories` -> `view_access` | Get category with parent and sub-categories |
+| `PUT` | `/api/categories/status/:id` | `Categories` -> `edit_access` | Update category active/inactive status |
+| `DELETE` | `/api/categories/delete/:id` | `Categories` -> `delete_access` | Soft-delete category |
+| `POST` | `/api/categories/multiple/delete` | `Categories` -> `delete_access` | Bulk soft-delete categories |
+
+---
+
+## 🖼️ Collection APIs (`/api/collections`)
+
+| Method | Endpoint | Required Permission | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/collections/create` | `Collections` -> `create_access` | Create collection (supports `image` and `banner_image` uploads) |
+| `PUT` | `/api/collections/update/:id` | `Collections` -> `edit_access` | Update collection details and images |
+| `GET` | `/api/collections/all` | `Collections` -> `view_access` | Get all collections (paginated, searchable) |
+| `GET` | `/api/collections/withoutFilter` | `Collections` -> `view_access` | Get all active collections |
+| `GET` | `/api/collections/get/:id` | `Collections` -> `view_access` | Get collection by ID |
+| `PUT` | `/api/collections/status/:id` | `Collections` -> `edit_access` | Update collection active/inactive status |
+| `DELETE` | `/api/collections/delete/:id` | `Collections` -> `delete_access` | Soft-delete collection |
+| `POST` | `/api/collections/multiple/delete` | `Collections` -> `delete_access` | Bulk soft-delete collections |
+
+---
+
+## 🛍️ Product & Variant APIs (`/api/products`)
+
+### Endpoints
+
+| Method | Endpoint | Required Permission | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/products/create` | `Products` -> `create_access` | Create product with variants, collection associations, and images |
+| `PUT` | `/api/products/update/:id` | `Products` -> `edit_access` | Update product, variants, images, and collections |
+| `GET` | `/api/products/all` | `Products` -> `view_access` | Get all products with filters (category, collection, price range, search) |
+| `GET` | `/api/products/slug/:slug` | Public | Storefront SEO endpoint to get active product by slug |
+| `GET` | `/api/products/get/:id` | `Products` -> `view_access` | Get full product with category, collections, and variants |
+| `PUT` | `/api/products/status/:id` | `Products` -> `edit_access` | Toggle product active status |
+| `PUT` | `/api/products/featured/:id` | `Products` -> `edit_access` | Toggle product `is_featured` flag |
+| `PATCH` | `/api/products/variants/:variant_id/stock` | `Products` -> `edit_access` | Directly set or adjust stock quantity of a variant |
+| `DELETE` | `/api/products/delete/:id` | `Products` -> `delete_access` | Soft-delete product and its variants |
+| `POST` | `/api/products/multiple/delete` | `Products` -> `delete_access` | Bulk soft-delete products and variants |
+
+### Example Product Create Payload (JSON or multipart/form-data)
+```json
+{
+  "name": "Traditional Gold Plated Bangles",
+  "category_id": "4ba98d79-052a-4db5-b827-04d80582d921",
+  "collection_ids": ["8872b834-081e-4581-807d-08db33054be0"],
+  "brand": "Balaji Imitation",
+  "description": "Premium quality imitation bridal bangles set with micro gold plating.",
+  "short_description": "Micro Gold Plated Bangles Set of 4",
+  "is_featured": true,
+  "status": true,
+  "variants": [
+    {
+      "sku": "BG-24-GLD",
+      "price": 799,
+      "discount_price": 649,
+      "stock_quantity": 40,
+      "attributes": {
+        "size": "2.4",
+        "color": "Gold"
+      }
+    },
+    {
+      "sku": "BG-26-GLD",
+      "price": 799,
+      "discount_price": 649,
+      "stock_quantity": 30,
+      "attributes": {
+        "size": "2.6",
+        "color": "Gold"
+      }
+    }
+  ]
+}
+```
+
+### Stock Update Payload (`PATCH /api/products/variants/:variant_id/stock`)
+```json
+{
+  "stock_quantity": 50
+}
+```
+*Or adjust relative stock:*
+```json
+{
+  "adjustment": 10
+}
+```
